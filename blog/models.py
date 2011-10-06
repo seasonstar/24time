@@ -24,6 +24,7 @@ class Comment(models.Model):
 
 class CommentAdmin(admin.ModelAdmin):
     display_fields = ['post', 'author' ,'created']
+    list_display = ['body', 'created', 'author']
 
 class CommentForm(ModelForm):
     class Meta:
