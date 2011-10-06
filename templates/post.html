@@ -1,0 +1,28 @@
+<div class="title">{{post.title}}</div>
+<ul>
+    <div class="time">{{ post.created }}</div>
+    <div class="body">{{ post.body|linebreaks }}</div>
+</ul>
+
+<!-- Comments -->
+{% if comments %}
+<p>评论:</p>
+{% endif %}
+
+{% for comment in comments %}
+<div class="comment">
+    <div class="time">{{ comment.created }}|{{comment.author}}</div>
+    <div class="body">{{ comment.body|linebreaks }}</div>
+</div>
+{% endfor %}
+
+<div id="addc">添加评论</div>
+<!--Comment form -->
+<form action="{% url blog.views.add_comment post.id %}" method="POST">
+    {% csrf_token %}
+    <div id="cform">
+        名字:{{ form.author }}
+        <p>{{ form.body|linebreaks }}</p>
+    </div>
+    <div id="submit"><input type="submit" value="Submit"></div>
+</form>
