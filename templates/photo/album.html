@@ -1,0 +1,19 @@
+<!--images-->
+<ul>
+    <div class="title">{{ album.title }}</div>
+        <div class="right">
+        View:
+        <a href="{% url photo.views.album album.pk 'thumbnails' %}">thumbnails</a>
+        <a href="{% url photo.views.album album.pk 'full' %}">full</a>&nbsp;
+        </div>
+        {% for img in images.object_list %}
+            {% if view == "full" %}
+                <a href="{% url photo.views.image img.pk %}"><img border="0" alt=""
+                    src="{{ media_url }}{{ img.image.name }}"
+                    {% if img.width > 900 %}width="900"{% endif %} /></a>
+            {% else %}
+                <a href="{% url photo.views.image img.pk %}"><img border="0" alt=""
+                    src="{{ media_url }}{{ img.thumbnail2.name }}" /></a>
+            {% endif %}
+        {% endfor %}
+</ul>
