@@ -1,11 +1,41 @@
-<a href="{{ backurl }}">&lt;&lt; back</a>
-<ul>
-    {% if image.title %}
-        <div class="title">{{ image.title }}</div>
-    {% endif %}
+{% extends "base.html" %}
 
-    <ul>
-        <img border="0" alt="" src="{{ media_url }}{{ image.image.name }}" width="900" />
-    </ul>
-</ul>
+{% block sidebar %} <style type="text/css"> </style> {% endblock %}
 
+{% block content %}
+    <style type="text/css">
+        .main { margin-left: 25px; margin-top: 30px; }
+        .title {
+            font-size: 1.4em; margin-top: 20px; border-bottom: 1px solid #ccc;
+            padding-left: 4px;
+        }
+        .messages { margin-left: 20px; }
+        img { margin: 10px; padding: 5px; border: 1px solid #ccc; }
+    </style>
+
+    <div class="main">
+
+        <!-- Messages  -->
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <a href="{{ backurl }}">&lt;&lt; back</a>
+        <!-- Image -->
+        <ul>
+            {% if image.title %}
+                <div class="title">{{ image.title }}</div>
+            {% endif %}
+
+            <ul>
+                <img border="0" alt="" src="{{ media_url }}{{ image.image.name }}" width="900" />
+            </ul>
+        </ul>
+
+    </div>
+
+{% endblock %}

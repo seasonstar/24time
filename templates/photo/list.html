@@ -1,25 +1,52 @@
 {% extends "base.html" %}
 
+{% block sidebar %} <style type="text/css"> </style> {% endblock %}
+
 {% block content %}
+    <style type="text/css">
+        .main { margin-left: 25px; margin-top: 30px; }
+        .step-links a { font-size: 0.89em; }
+        .title {
+            font-size: 1.4em; margin-top: 20px; border-bottom: 1px solid #ccc;
+            padding-left: 4px;
+        }
+        .messages { margin-left: 20px; }
+        .pagination { margin-top: 20px; margin-left: -20px; }
+
+        img { margin: 10px; padding: 5px; border: 1px solid #ccc; }
+    </style>
+
     <div class="main">
-        <!--Albums -->
+
+        <!-- Messages  -->
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <!-- Albums  -->
         <ul>
             {% for album in albums.object_list %}
-            <div class="title"><a href="{% url photo.views.album album.pk %}">{{ album.title}}</a>({{ album.image_set.count }} images)</div>
-            <ul>
-                {% for img in album.images %}
-                <a href="{{ media_url }}{{ img.image.name }}"><img border='' alt="" src="{{media_url}}{{img.thumbnail2.name}}"></a>
-                {% endfor %}
-            </ul>
+                <div class="title"><a href="{% url photo.views.album album.pk %}">{{ album.title }}</a>
+                    ({{ album.image_set.count }} images)</div>
+                <ul>
+                    {% for img in album.images %}
+                        <a href="{{ media_url }}{{ img.image.name }}"><img border="0" alt=""
+                            src="{{ media_url }}{{ img.thumbnail2.name }}" /></a>
+                    {% endfor %}
+                </ul>
             {% endfor %}
         </ul>
 
-        <!-- Next/Prev page links-->
+        <!-- Next/Prev page links  -->
         {% if albums.object_list and albums.paginator.num_pages > 1 %}
         <div class="pagination">
             <span class="step-links">
                 {% if albums.has_previous %}
-                <a href="?page={{ albums.previous_page_number }}">后退&lt;&lt;</a>
+                    <a href= "?page={{ albums.previous_page_number }}">previous &lt;&lt; </a>
                 {% endif %}
 
                 <span class="current">
@@ -27,10 +54,12 @@
                 </span>
 
                 {% if albums.has_next %}
-                <a href="?page={{ albums.next_page_number }}">&gt;&gt;前进</a>
+                    <a href="?page={{ albums.next_page_number }}"> &gt;&gt; next</a>
                 {% endif %}
             </span>
         </div>
         {% endif %}
+
     </div>
+
 {% endblock %}
