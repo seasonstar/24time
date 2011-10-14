@@ -4,6 +4,7 @@ from django.shortcuts import render_to_response
 from django.core.urlresolvers import reverse
 from django.core.context_processors import csrf
 from blog.models import *
+
 import time
 from calendar import month_name
 
@@ -42,7 +43,7 @@ def mkmonth_lst():
 def month(request, year, month):
     """Monthly archive."""
     posts = Post.objects.filter(created__year=year, created__month=month)
-    return render_to_response("list.html", dict(
+    return render_to_response("blog/list.html", dict(
         post_list=posts,
         user=request.user,
         months = mkmonth_lst(),
@@ -64,7 +65,7 @@ def main(request):
     except (InvalidPage, EmptyPage):
         posts = paginator.page(paginator.num_pages)
 
-    return render_to_response("list.html", dict(
+    return render_to_response("blog/list.html", dict(
         posts=posts, 
         user=request.user,
         post_list=posts.object_list,
@@ -77,7 +78,7 @@ def post(request, pk):
     comments = Comment.objects.filter(post=post)
     d = dict(post=post, comments=comments, form=CommentForm(), user=request.user)
     d.update(csrf(request))
-    return render_to_response('post.html', d)
+    return render_to_response('blog/post.html', d)
 
 def add_comment(request, pk):
     """Add a new comment."""
