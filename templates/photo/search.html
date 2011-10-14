@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block sidebar %} <style type="text/css"> </style> {% endblock %}
+
+{% block content %}
+    <style type="text/css">
+        .main { margin-left: 25px; margin-top: 30px; }
+        .step-links a { font-size: 0.89em; }
+        .title {
+            font-size: 1.4em; margin-top: 20px; border-bottom: 1px solid #ccc;
+            padding-left: 4px;
+        }
+        .messages { margin-left: 20px; }
+        .pagination { margin-top: 20px; margin-left: -20px; }
+        .center { text-align: center; margin: 4px; }
+        .form { border: 0px solid #ddd; margin: 3px; padding: 3px; top-margin: 6px; }
+
+        img { margin: 10px; padding: 5px; border: 1px solid #ccc; margin-bottom: 2px; }
+        td { text-align: right; }
+    </style>
+
+    <div class="main">
+
+        <!-- Messages  -->
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <!-- Form  -->
+        <ul>
+            <div class="title">Search</div>
+                <form action="{% url photo.views.search %}" method="POST">{% csrf_token %}
+
+                <div class="form">
+                Title: <input type="text" name="title" value="{{ prm.title }}" />
+                Filename: <input type="text" name="filename" value="{{ prm.filename }}" />
+                Tags: <input type="text" name="tags" value="{{ prm.tags }}" /><br />
+                </div>
+
+                <div class="form">
+                Rating:
+                <input size="3" type="text" name="rating_from" value="{{ prm.rating_from }}" /> to
+                <input size="3" type="text" name="rating_to" value="{{ prm.rating_to }}" />
+                Width:
+                <input size="3" type="text" name="width_from" value="{{ prm.width_from }}" /> to
+                <input size="3" type="text" name="width_to" value="{{ prm.width_to }}" />
+                Height:
+                <input size="3" type="text" name="height_from" value="{{ prm.height_from }}" /> to
+                <input size="3" type="text" name="height_to" value="{{ prm.height_to }}" />
+                </div>
+
+                <div class="form">
+                {% for album in albums %}
+                    {{ album.title }}:
+                    <input type="checkbox" name="album" value="{{ album.pk }}"
+                        {% if album.pk in prm.album %}checked{% endif %} />
+                {% endfor %}
+
+                User:
+                <select name="user">
+                    <option value="all" {% if prm.user == "all" %}selected{% endif %}>all</option>
+                    {% for user in users %}
+                        <option value="{{ user.pk }}" {% if prm.user == user.pk %}selected{% endif %}>
+                            {{ user.username }}</option>
+                    {% endfor %}
+                </select>
+
+                Mode:
+                <select name="view">
+                    <option value="view" {% if prm.view == "view" %}selected{% endif %}>view</option>
+                    <option value="edit" {% if prm.view == "edit" %}selected{% endif %}>edit</option>
+                </select>
+
+                Sort:
+                <select name="sort">
+                    <option value="created" {% if prm.sort == "created" %}selected{% endif %}>date</option>
+                    <option value="rating" {% if prm.sort == "rating" %}selected{% endif %}>rating</option>
+                    <option value="width" {% if prm.sort == "width" %}selected{% endif %}>width</option>
+                    <option value="height" {% if prm.sort == "height" %}selected{% endif %}>height</option>
+                </select>
+
+                <select name="asc_desc">
+                    <option value="asc" {% if prm.sort == "asc" %}selected{% endif %}>ascending</option>
+                    <option value="desc" {% if prm.sort == "desc" %}selected{% endif %}>descending</option>
+                </select>
+
+                <input type="submit" value="Apply" />
+                </div>
+
+            <!-- Results  -->
+            <div class="title">Results</div>
+
+                {% for img in results.object_list %}
+
+                    <!-- EDIT VIEW  -->
+                    {% if prm.view == "edit" %}
+
+                        <table>
+                        <tr><td class="center">
+                        <a href="{% url photo.views.image img.pk %}"><img border="0" alt=""
+                            src="{{ media_url }}{{ img.thumbnail2.name }}" /></a><br />
+                            {{ img.width }} x {{ img.height }}
+                            </td>
+                            <td>
+                {{ img.created }} <br />
+                Title: <input type="text" name="title-{{ img.pk }}" value="{{ img.title }}" /><br />
+                Tags: <input type="text" name="tags-{{ img.pk }}" value="{{ img.tag_lst }}" /><br />
+                Rating:
+                <input size="3" type="text" name="rating-{{ img.pk }}" value="{{ img.rating }}" /><br />
+
+                        {% for album in albums %}
+                            {{ album.title }}:
+                            <input type="checkbox" name="album-{{ img.pk }}" value="{{ album.pk }}"
+                                {% if album.title in img.album_lst %}checked{% endif %} />
+                        {% endfor %}
+                        </td></tr></table>
+                        <br />
+
+                    {% endif %}
+
+                    <!-- COMPACT VIEW  -->
+                    {% if prm.view == "view" %}
+                        <a href="{% url photo.views.image img.pk %}"><img border="0" alt=""
+                            src="{{ media_url }}{{ img.thumbnail2.name }}" /></a>
+                    {% endif %}
+                {% endfor %}
+
+                </form>
+
+        </ul>
+
+        <!-- Next/Prev page links  -->
+        {% if results.object_list and results.paginator.num_pages > 1 %}
+        <div class="pagination">
+            <span class="step-links">
+                {% if results.has_previous %}
+                    <a href= "?page={{ results.previous_page_number }}">previous &lt;&lt; </a>
+                {% endif %}
+
+                <span class="current">
+                    &nbsp;Page {{ results.number }} of {{ results.paginator.num_pages }}
+                </span>
+
+                {% if results.has_next %}
+                    <a href="?page={{ results.next_page_number }}"> &gt;&gt; next</a>
+                {% endif %}
+            </span>
+        </div>
+        {% endif %}
+
+    </div>
+
+{% endblock %}
+
